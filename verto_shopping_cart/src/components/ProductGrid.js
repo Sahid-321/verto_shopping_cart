@@ -53,8 +53,13 @@ const ProductGrid = () => {
   }
 
   return (
-    <div className="product-grid-container">
-      <h2 className="section-title">Our Products</h2>
+    <div className="product-grid-container" id="products">
+      <div className="section-header">
+        <h2 className="section-title">Featured Products</h2>
+        <p className="section-subtitle">
+          Discover our handpicked selection of premium tech products designed to enhance your digital lifestyle.
+        </p>
+      </div>
       <div className="product-grid">
         {products.map(product => (
           <ProductCard key={product.id} product={product} />

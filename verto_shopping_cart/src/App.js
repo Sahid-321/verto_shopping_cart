@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { CartProvider } from './context/CartContext';
 import Header from './components/Header';
+import HeroSection from './components/HeroSection';
+import FeaturesSection from './components/FeaturesSection';
 import ProductGrid from './components/ProductGrid';
 import CartModal from './components/CartModal';
 import './App.css';
@@ -16,6 +18,8 @@ function App() {
       <div className="App">
         <Header onCartClick={openCart} />
         <main className="main-content">
+          <HeroSection />
+          <FeaturesSection />
           <ProductGrid />
         </main>
         <CartModal isOpen={isCartOpen} onClose={closeCart} />

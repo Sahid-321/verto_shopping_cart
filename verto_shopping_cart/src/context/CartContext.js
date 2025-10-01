@@ -2,12 +2,35 @@ import React, { createContext, useContext, useReducer, useEffect } from 'react';
 
 const CartContext = createContext();
 
+// localStorage utilities
+const CART_STORAGE_KEY = 'verto_shopping_cart';
+
+const saveCartToStorage = (items) => {
+  try {
+    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
+  } catch (error) {
+    console.error('Error saving cart to localStorage:', error);
+  }
+};
+
+const loadCartFromStorage = () => {
+  try {
+    const savedCart = localStorage.getItem(CART_STORAGE_KEY);
+    if (savedCart) {
+      const parsedCart = JSON.parse(savedCart);
+      return Array.isArray(parsedCart) ? parsedCart : [];
+    }
+  } catch (error) {
+    console.error('Error loading cart from localStorage:', error);
+  }
+  return [];
+};
+
 // Action types
 const ADD_TO_CART = 'ADD_TO_CART';
 const REMOVE_FROM_CART = 'REMOVE_FROM_CART';
 const UPDATE_QUANTITY = 'UPDATE_QUANTITY';
 const CLEAR_CART = 'CLEAR_CART';
-const LOAD_CART = 'LOAD_CART';
 
 // Cart reducer
 const cartReducer = (state, action) => {
@@ -60,41 +83,26 @@ const cartReducer = (state, action) => {
         items: []
       };
 
-    case LOAD_CART:
-      return {
-        ...state,
-        items: action.payload || []
-      };
-
     default:
       return state;
   }
 };
 
-// Initial state
-const initialState = {
-  items: []
+// Initial state - load from localStorage
+const getInitialState = () => {
+  return {
+    items: loadCartFromStorage()
+  };
 };
+
+const initialState = getInitialState();
 
 export const CartProvider = ({ children }) => {
   const [state, dispatch] = useReducer(cartReducer, initialState);
 
-  // Load cart from localStorage on mount
-  useEffect(() => {
-    const savedCart = localStorage.getItem('verto_shopping_cart');
-    if (savedCart) {
-      try {
-        const parsedCart = JSON.parse(savedCart);
-        dispatch({ type: LOAD_CART, payload: parsedCart });
-      } catch (error) {
-        console.error('Error loading cart from localStorage:', error);
-      }
-    }
-  }, []);
-
   // Save cart to localStorage whenever it changes
   useEffect(() => {
-    localStorage.setItem('verto_shopping_cart', JSON.stringify(state.items));
+    saveCartToStorage(state.items);
   }, [state.items]);
 
   // Calculate total price
